@@ -6,7 +6,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 
 const PORT = process.env.PORT || 4173;
-const ROOT = __dirname;
+const ROOT = path.join(__dirname, "public");
 const UPSTREAM = "https://rsf.lsport.net";
 const ORG_ID = "5c43657e-c0ef-4eda-9737-025e2f7bbfe2";
 const UPSTREAM_TIMEOUT_MS = 60000; // observed rsf.lsport.net taking 12-40s+ on "unique" queries — 35s was killing real, still-working requests

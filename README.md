@@ -8,7 +8,13 @@
 Ванильные HTML/CSS/JS без сборки и без зависимостей — исходники подключены
 напрямую через `<script>`/`<link>`.
 
-## Запуск
+`/api/top` и `/api/locations` — POST-запросы к rsf.lsport.net, поэтому фронтенд
+всегда нужен вместе с прокси: чисто статический хостинг (например, GitHub
+Pages) их не примет и ответит 405.
+
+## Запуск локально
+
+Без Cloudflare-аккаунта — простой Node-сервер:
 
 ```
 node server.js
@@ -16,17 +22,31 @@ node server.js
 
 Приложение поднимется на `http://localhost:4173`.
 
+Ближе к продакшену — через Wrangler (тот же Worker, что и в проде):
+
+```
+npx wrangler dev
+```
+
+## Деплой на Cloudflare Workers
+
+```
+npx wrangler login   # один раз
+npx wrangler deploy
+```
+
 ## Структура
 
-- `index.html`, `app.js`, `styles.css` — фронтенд.
-- `server.js` — минимальный прокси-сервер на встроенном `http`: два маршрута
-  (`/api/top`, `/api/locations`) проксируют запросы к rsf.lsport.net (с
-  кэшированием и объединением параллельных одинаковых запросов), остальное —
-  раздача статики.
-- `fonts/` — кириллический сабсет Inter, встраивается в PDF-экспорт (шрифты
-  jsPDF по умолчанию не содержат кириллицы).
-- `icons/` — фавикон и иконки PWA/Open Graph.
-- `robots.txt`, `sitemap.xml`, `site.webmanifest` — SEO и PWA-манифест.
+- `public/` — статика: `index.html`, `app.js`, `styles.css`, `fonts/`
+  (кириллический сабсет Inter для PDF-экспорта — шрифты jsPDF по умолчанию не
+  содержат кириллицы), `icons/` (фавикон, PWA, Open Graph), `robots.txt`,
+  `sitemap.xml`, `site.webmanifest`.
+- `worker/index.js` — Cloudflare Worker: проксирует `/api/top` и
+  `/api/locations` к rsf.lsport.net (с кэшем через Workers Cache API и одним
+  повтором при обрыве соединения), остальные пути отдаёт из `public/` через
+  ASSETS-биндинг. Используется в проде (`wrangler.jsonc`).
+- `server.js` — тот же прокси на чистом Node `http`, без Cloudflare —
+  для локальной разработки без аккаунта/CLI.
 
 ## Данные
 
