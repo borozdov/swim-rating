@@ -30,10 +30,25 @@ npx wrangler dev
 
 ## Деплой на Cloudflare Workers
 
+Вручную:
+
 ```
 npx wrangler login   # один раз
 npx wrangler deploy
 ```
+
+Автоматически — `.github/workflows/deploy.yml` деплоит на каждый push в
+`main` через [wrangler-action](https://github.com/cloudflare/wrangler-action).
+Чтобы он заработал, один раз добавить в **Settings → Secrets and variables →
+Actions** этого репозитория два секрета:
+
+- `CLOUDFLARE_API_TOKEN` — API-токен с правом **Workers Scripts: Edit** на
+  нужный аккаунт (dashboard.cloudflare.com → **My Profile → API Tokens →
+  Create Token**, шаблон "Edit Cloudflare Workers" подходит как есть).
+- `CLOUDFLARE_ACCOUNT_ID` — ID аккаунта (виден в дашборде справа на странице
+  любого домена/Workers).
+
+После этого `git push` в `main` — единственное, что нужно для выката прода.
 
 ## Структура
 
@@ -47,6 +62,8 @@ npx wrangler deploy
   ASSETS-биндинг. Используется в проде (`wrangler.jsonc`).
 - `server.js` — тот же прокси на чистом Node `http`, без Cloudflare —
   для локальной разработки без аккаунта/CLI.
+- `.github/workflows/deploy.yml` — автодеплой на Cloudflare Workers при push
+  в `main` (см. выше про секреты).
 
 ## Данные
 
