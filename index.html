@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="obsidian">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<script>
+(function () {
+  try {
+    var stored = localStorage.getItem('lik');
+    document.documentElement.dataset.theme =
+      stored === 'titan' || stored === 'obsidian'
+        ? stored
+        : window.matchMedia('(prefers-color-scheme: light)').matches ? 'titan' : 'obsidian';
+  } catch (e) {}
+})();
+</script>
+<title>Рейтинг пловцов России — лучшие результаты и места по данным ФВВСР</title>
+<meta name="description" content="Рейтинг пловцов России: лучшие результаты по всем дистанциям и стилям — вольный стиль, брасс, баттерфляй, на спине, комплекс, открытая вода. Фильтры по полу, году рождения, бассейну 25/50 м и региону. Данные Федерации водных видов спорта России." />
+<meta name="theme-color" id="theme-color-meta" content="#0d0d0d" />
+<link rel="canonical" href="https://swim-rating.borozdov.ru/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Рейтинг пловцов" />
+<meta property="og:title" content="Рейтинг пловцов России" />
+<meta property="og:description" content="Лучшие результаты пловцов России по всем дистанциям и стилям. Фильтры, избранное, поиск себя в рейтинге, экспорт карточек. Данные ФВВСР." />
+<meta property="og:url" content="https://swim-rating.borozdov.ru/" />
+<meta property="og:image" content="https://swim-rating.borozdov.ru/icons/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="ru_RU" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Рейтинг пловцов России" />
+<meta name="twitter:description" content="Лучшие результаты пловцов России по всем дистанциям и стилям. Данные ФВВСР." />
+<meta name="twitter:image" content="https://swim-rating.borozdov.ru/icons/og.png" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23fafafa'/%3E%3Ctext x='50' y='53' dominant-baseline='central' text-anchor='middle' font-family='Inter, %22Helvetica Neue%22, Helvetica, Arial, sans-serif' font-weight='700' font-size='62' fill='%230d0d0d'%3E%D0%A0%3C/text%3E%3C/svg%3E" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Рейтинг пловцов",
+  "url": "https://swim-rating.borozdov.ru/",
+  "description": "Рейтинг и лучшие результаты пловцов России по данным Федерации водных видов спорта России: все дистанции и стили, фильтры по полу, году рождения, бассейну и региону.",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "ru",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+  "author": { "@type": "Person", "name": "Никита Бороздов", "url": "https://borozdov.ru" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5c2.4 0 2.4 2 4.8 2s2.4-2 4.8-2 2.4 2 4.8 2 2.4-2 4.8-2"/><path d="M2 14.5c2.4 0 2.4 2 4.8 2s2.4-2 4.8-2 2.4 2 4.8 2 2.4-2 4.8-2"/></svg>
+      </span>
+      <div>
+        <h1>Рейтинг пловцов</h1>
+        <p class="brand-sub">по данным Федерации водных видов спорта России</p>
+      </div>
+    </div>
+    <button type="button" id="theme-toggle" class="icon-btn" title="Сменить тему" aria-label="Сменить тему">
+      <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <div class="sheet-backdrop" id="filters-backdrop" hidden></div>
+  <div class="sheet-backdrop" id="person-search-backdrop" hidden></div>
+
+  <div class="person-search-panel" id="person-search-panel" aria-labelledby="person-search-title">
+    <div class="person-search-header">
+      <strong id="person-search-title">Найти себя по дистанциям</strong>
+      <button type="button" class="icon-btn" id="person-search-close" aria-label="Закрыть">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p class="person-search-hint">Отметьте дисциплины, в которых искать — чем больше отмечено, тем дольше идёт поиск (проверяются по очереди, upstream не быстрый).</p>
+    <div class="field">
+      <label for="person-search-name">Фамилия и/или имя</label>
+      <input type="text" id="person-search-name" class="input" placeholder="Фамилия, имя — или оба" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label>Дисциплины</label>
+      <div class="person-search-disciplines" id="person-search-disciplines"></div>
+    </div>
+    <div class="person-search-estimate" id="person-search-estimate"></div>
+    <div class="filters-footer">
+      <button type="button" class="btn" id="person-search-clear">Снять всё</button>
+      <button type="button" class="btn btn-primary" id="person-search-submit" disabled>Искать</button>
+    </div>
+  </div>
+
+  <aside class="filters" id="filters" aria-labelledby="filters-sheet-title">
+    <div class="filters-sheet-top">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <div class="filters-heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--slate)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="20" y2="12"/><line x1="11" y1="18" x2="20" y2="18"/></svg>
+        <strong id="filters-sheet-title">Фильтры</strong>
+        <span class="filter-count-badge" id="filter-count-badge-heading" hidden>0</span>
+        <button type="button" class="icon-btn filters-close-mobile" id="filters-close-mobile" aria-label="Закрыть фильтры">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="filters-body" id="filters-body">
+    <div class="field">
+      <label id="discipline-label">Дисциплина</label>
+      <div class="custom-select" id="discipline-field">
+        <button type="button" class="input custom-select-trigger" id="discipline-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="discipline-label">
+          <span id="discipline-trigger-label"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="custom-select-panel" id="discipline-panel" role="listbox" aria-labelledby="discipline-label" hidden></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Пол</label>
+      <div class="segmented" id="gender-segmented">
+        <button type="button" class="seg-btn active" data-value="">Любой</button>
+        <button type="button" class="seg-btn" data-value="1">Мужской</button>
+        <button type="button" class="seg-btn" data-value="2">Женский</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Бассейн</label>
+      <div class="segmented" id="pool-segmented">
+        <button type="button" class="seg-btn active" data-value="">Любой</button>
+        <button type="button" class="seg-btn" data-value="25">25 м</button>
+        <button type="button" class="seg-btn" data-value="50">50 м</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Год рождения</label>
+      <div class="range-inputs">
+        <input type="number" id="birthyear-min" class="input" min="1930" placeholder="1995" inputmode="numeric" />
+        <span class="range-sep">–</span>
+        <input type="number" id="birthyear-max" class="input" min="1930" placeholder="2015" inputmode="numeric" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="period-label">Период</label>
+      <div class="range-inputs">
+        <div class="date-picker" id="date-start-field">
+          <button type="button" class="input date-picker-trigger" id="date-start-trigger" aria-haspopup="dialog" aria-expanded="false" aria-labelledby="period-label">
+            <span id="date-start-trigger-label" class="date-picker-trigger-label"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </button>
+          <div class="date-picker-panel" id="date-start-panel" hidden>
+            <div class="date-picker-nav">
+              <button type="button" class="icon-btn" id="date-start-prev" aria-label="Предыдущий месяц"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <div class="date-picker-month" id="date-start-month"></div>
+              <button type="button" class="icon-btn" id="date-start-next" aria-label="Следующий месяц"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+            <div class="date-picker-weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+            <div class="date-picker-grid" id="date-start-grid"></div>
+            <div class="date-picker-footer">
+              <button type="button" class="btn" id="date-start-today">Сегодня</button>
+              <button type="button" class="btn" id="date-start-clear">Очистить</button>
+            </div>
+          </div>
+        </div>
+        <span class="range-sep">–</span>
+        <div class="date-picker" id="date-end-field">
+          <button type="button" class="input date-picker-trigger" id="date-end-trigger" aria-haspopup="dialog" aria-expanded="false" aria-labelledby="period-label">
+            <span id="date-end-trigger-label" class="date-picker-trigger-label"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </button>
+          <div class="date-picker-panel" id="date-end-panel" hidden>
+            <div class="date-picker-nav">
+              <button type="button" class="icon-btn" id="date-end-prev" aria-label="Предыдущий месяц"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <div class="date-picker-month" id="date-end-month"></div>
+              <button type="button" class="icon-btn" id="date-end-next" aria-label="Следующий месяц"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+            <div class="date-picker-weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+            <div class="date-picker-grid" id="date-end-grid"></div>
+            <div class="date-picker-footer">
+              <button type="button" class="btn" id="date-end-today">Сегодня</button>
+              <button type="button" class="btn" id="date-end-clear">Очистить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field territory-field">
+      <label for="territory-input">Территория</label>
+      <div class="territory-control" id="territory-control">
+        <div class="chips" id="territory-chips"></div>
+        <input type="text" id="territory-input" class="input" placeholder="Регион, город…" autocomplete="off" />
+        <div class="territory-dropdown" id="territory-dropdown" hidden></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="name-search">Спортсмен</label>
+      <input type="text" id="name-search" class="input" placeholder="Фамилия, имя — или оба" autocomplete="off" />
+      <button type="button" id="person-search-trigger" class="link-btn">Искать по нескольким дистанциям →</button>
+    </div>
+
+    <label class="checkbox-field">
+      <input type="checkbox" id="unique-toggle" checked />
+      <span>Только лучший результат спортсмена</span>
+    </label>
+    </div>
+
+    <div class="filters-footer">
+      <button type="button" id="reset-filters" class="btn">Сбросить фильтры</button>
+      <button type="button" id="filters-apply-mobile" class="btn btn-primary filters-apply-btn">Показать результаты</button>
+    </div>
+  </aside>
+
+  <section class="results">
+    <div class="results-toolbar">
+      <button type="button" id="exit-person-search" class="btn btn-primary" hidden>← Выйти из поиска</button>
+
+      <button type="button" id="filters-trigger-mobile" class="btn filter-trigger-mobile" aria-haspopup="dialog" aria-expanded="false" aria-controls="filters">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="20" y2="12"/><line x1="11" y1="18" x2="20" y2="18"/></svg>
+        Фильтры
+        <span class="filter-count-badge" id="filter-count-badge-trigger" hidden>0</span>
+      </button>
+
+      <div id="result-count" class="result-count" role="status" aria-live="polite"></div>
+
+      <button type="button" id="favorites-trigger" class="btn" aria-pressed="false">
+        <svg class="fav-star-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6.9 7.1.6-5.4 4.7 1.7 7-6.3-3.9-6.3 3.9 1.7-7-5.4-4.7 7.1-.6z"/></svg>
+        <span id="favorites-trigger-label">Избранное</span>
+      </button>
+
+      <button type="button" id="export-csv" class="btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        CSV
+      </button>
+      <button type="button" id="export-list-png" class="btn" title="Скачать список — PNG">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        PNG
+      </button>
+      <button type="button" id="export-list-pdf" class="btn" title="Скачать список — PDF">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        PDF
+      </button>
+    </div>
+
+    <div class="loading-bar" id="loading-bar" hidden></div>
+
+    <div id="status-banner"></div>
+
+    <div id="skeleton" class="skeleton-card" hidden>
+      <div class="skeleton-row"><div class="skeleton-block skeleton-num"></div><div class="skeleton-main"><div class="skeleton-block"></div><div class="skeleton-block"></div></div><div class="skeleton-block skeleton-mid"></div><div class="skeleton-block skeleton-pill"></div></div>
+      <div class="skeleton-row"><div class="skeleton-block skeleton-num"></div><div class="skeleton-main"><div class="skeleton-block"></div><div class="skeleton-block"></div></div><div class="skeleton-block skeleton-mid"></div><div class="skeleton-block skeleton-pill"></div></div>
+      <div class="skeleton-row"><div class="skeleton-block skeleton-num"></div><div class="skeleton-main"><div class="skeleton-block"></div><div class="skeleton-block"></div></div><div class="skeleton-block skeleton-mid"></div><div class="skeleton-block skeleton-pill"></div></div>
+      <div class="skeleton-row"><div class="skeleton-block skeleton-num"></div><div class="skeleton-main"><div class="skeleton-block"></div><div class="skeleton-block"></div></div><div class="skeleton-block skeleton-mid"></div><div class="skeleton-block skeleton-pill"></div></div>
+      <div class="skeleton-row"><div class="skeleton-block skeleton-num"></div><div class="skeleton-main"><div class="skeleton-block"></div><div class="skeleton-block"></div></div><div class="skeleton-block skeleton-mid"></div><div class="skeleton-block skeleton-pill"></div></div>
+    </div>
+
+    <div id="empty-state" class="empty-state" hidden>
+      <div class="empty-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </div>
+      <div class="empty-title" id="empty-title">Ничего не найдено</div>
+      <div class="empty-sub" id="empty-sub">Попробуйте изменить или сбросить фильтры</div>
+      <button type="button" id="empty-reset-filters" class="btn">Сбросить фильтры</button>
+    </div>
+
+    <div id="results-desktop" class="results-grid disp-desktop">
+      <div class="row row-head" role="row" aria-hidden="true">
+        <div>№</div><div>Спортсмен</div><div>Дисциплина</div><div>Результат</div><div>AQUA</div><div>Старт</div><div></div>
+      </div>
+      <div id="results-body"></div>
+    </div>
+
+    <div id="results-mobile" class="results-cards disp-mobile"></div>
+
+    <div class="pager" id="pager" hidden>
+      <div class="pager-buttons">
+        <button type="button" id="pg-prev" class="pg-arrow" aria-label="Предыдущая страница"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <div id="pg-items" style="display:contents"></div>
+        <button type="button" id="pg-next" class="pg-arrow" aria-label="Следующая страница"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div class="pager-caption" id="pager-caption"></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
