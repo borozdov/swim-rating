@@ -26,7 +26,7 @@ node server.js
 куда-либо ещё) указывает A-записью прямо на VPS. На сервере:
 
 ```
-git clone git@github.com:borozdov/swim-rating.git
+git clone https://github.com/borozdov/swim-rating.git
 cd swim-rating
 docker compose up -d --build
 ```
