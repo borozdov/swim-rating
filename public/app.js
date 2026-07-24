@@ -3,11 +3,14 @@
 /* ---------- Constants (reverse-engineered from rsf.lsport.net) ---------- */
 
 const SPORT_ID = "01f02e8d-6da4-43be-9dbf-05d47ab8a58d"; // Плавание
-// Same-origin routes — server.js proxies these to rsf.lsport.net server-side,
-// so the browser never makes a direct third-party request (ad blockers were
-// flagging that pattern and silently failing it with "Failed to fetch").
-const TOP_URL = "/api/top";
-const LOCATIONS_URL = "/api/locations";
+// Фронтенд отдаётся с GitHub Pages, а прокси — с отдельного бэкенда (см. README),
+// поэтому адреса абсолютные и кросс-origin (сервер отвечает нужными CORS-заголовками).
+// server.js/worker/index.js проксируют это на rsf.lsport.net сами — браузер никогда
+// не делает запрос напрямую к третьему домену (иначе адблокеры молча роняли его как
+// "Failed to fetch").
+const API_ORIGIN = "https://swim-rating.borozdov.ru";
+const TOP_URL = `${API_ORIGIN}/api/top`;
+const LOCATIONS_URL = `${API_ORIGIN}/api/locations`;
 const SERVER_TAKE = 50; // rows fetched per server round-trip
 const PERSON_SEARCH_TAKE = 500; // подтверждённый живым тестом максимум upstream — нужен полный (без имени) список, чтобы посчитать реальное место
 const CLIENT_PAGE_SIZE = 50; // rows shown per pager page

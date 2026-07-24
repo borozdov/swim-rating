@@ -7,6 +7,10 @@ const crypto = require("node:crypto");
 
 const PORT = process.env.PORT || 4173;
 const ROOT = path.join(__dirname, "public");
+// Фронтенд теперь на GitHub Pages — отдельное происхождение от этого сервера,
+// поэтому /api/* нужен CORS. Один конкретный origin, а не "*": ответы с
+// credentials/куки тут не участвуют, но незачем открывать прокси всем подряд.
+const ALLOWED_ORIGIN = "https://borozdov.github.io";
 const UPSTREAM = "https://rsf.lsport.net";
 const ORG_ID = "5c43657e-c0ef-4eda-9737-025e2f7bbfe2";
 const UPSTREAM_TIMEOUT_MS = 60000; // observed rsf.lsport.net taking 12-40s+ on "unique" queries — 35s was killing real, still-working requests
@@ -72,7 +76,7 @@ async function proxyRequest(req, res, route, upstreamPath) {
     const key = cacheKey(route, body);
     const cached = cache.get(key);
     if (cached && cached.expires > Date.now()) {
-      res.writeHead(cached.status, { "Content-Type": cached.contentType, "X-Cache": "HIT" });
+      res.writeHead(cached.status, { "Content-Type": cached.contentType, "X-Cache": "HIT", "Access-Control-Allow-Origin": ALLOWED_ORIGIN });
       res.end(cached.body);
       return;
     }
@@ -86,10 +90,10 @@ async function proxyRequest(req, res, route, upstreamPath) {
     }
     const result = await pending;
     if (result.status === 200) cache.set(key, { ...result, expires: Date.now() + CACHE_TTL_MS });
-    res.writeHead(result.status, { "Content-Type": result.contentType, "X-Cache": coalesced ? "COALESCED" : "MISS" });
+    res.writeHead(result.status, { "Content-Type": result.contentType, "X-Cache": coalesced ? "COALESCED" : "MISS", "Access-Control-Allow-Origin": ALLOWED_ORIGIN });
     res.end(result.body);
   } catch (err) {
-    res.writeHead(502, { "Content-Type": "application/json" });
+    res.writeHead(502, { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN });
     res.end(JSON.stringify({ error: String(err) }));
   }
 }
@@ -116,6 +120,18 @@ function serveStatic(req, res) {
 
 const server = http.createServer((req, res) => {
   const route = req.url.split("?")[0];
+  // Content-Type: application/json на POST — не "простой" CORS-запрос, браузер
+  // сперва шлёт OPTIONS и ждёт эти три заголовка, прежде чем отправить сам POST.
+  if (req.method === "OPTIONS" && PROXY_ROUTES[route]) {
+    res.writeHead(204, {
+      "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+      "Access-Control-Allow-Methods": "POST",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Max-Age": "86400",
+    });
+    res.end();
+    return;
+  }
   const upstreamPath = req.method === "POST" && PROXY_ROUTES[route];
   if (upstreamPath) {
     proxyRequest(req, res, route, upstreamPath);

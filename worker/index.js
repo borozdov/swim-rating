@@ -15,6 +15,9 @@ const UPSTREAM = "https://rsf.lsport.net";
 const ORG_ID = "5c43657e-c0ef-4eda-9737-025e2f7bbfe2";
 const UPSTREAM_TIMEOUT_MS = 60000; // rsf.lsport.net реально настолько медленный на "unique"-запросах
 const CACHE_TTL_S = 120;
+// Фронтенд теперь на GitHub Pages — если этот Worker когда-нибудь снова станет
+// прод-бэкендом (см. README), ему нужен тот же CORS, что уже есть в server.js.
+const ALLOWED_ORIGIN = "https://borozdov.github.io";
 
 const PROXY_ROUTES = {
   "/api/top": `/data/Records/Top/${ORG_ID}`,
@@ -65,6 +68,7 @@ async function proxyRequest(request, ctx, route, upstreamPath) {
   if (cached) {
     const hit = new Response(cached.body, cached);
     hit.headers.set("X-Cache", "HIT");
+    hit.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
     return hit;
   }
 
@@ -79,13 +83,26 @@ async function proxyRequest(request, ctx, route, upstreamPath) {
   }
   return new Response(result.text, {
     status: result.status,
-    headers: { "Content-Type": result.contentType, "X-Cache": "MISS" },
+    headers: { "Content-Type": result.contentType, "X-Cache": "MISS", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
   });
 }
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // Content-Type: application/json на POST — не "простой" CORS-запрос, браузер
+    // сперва шлёт OPTIONS и ждёт эти три заголовка, прежде чем отправить сам POST.
+    if (request.method === "OPTIONS" && PROXY_ROUTES[url.pathname]) {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
     const upstreamPath = request.method === "POST" && PROXY_ROUTES[url.pathname];
     if (upstreamPath) {
       try {
@@ -93,7 +110,7 @@ export default {
       } catch (err) {
         return new Response(JSON.stringify({ error: String(err) }), {
           status: 502,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
         });
       }
     }
