@@ -17,7 +17,7 @@ const UPSTREAM_TIMEOUT_MS = 60000; // rsf.lsport.net реально настол
 const CACHE_TTL_S = 120;
 // Фронтенд теперь на GitHub Pages — если этот Worker когда-нибудь снова станет
 // прод-бэкендом (см. README), ему нужен тот же CORS, что уже есть в server.js.
-const ALLOWED_ORIGIN = "https://borozdov.github.io";
+const ALLOWED_ORIGIN = "https://swim-rating.borozdov.ru";
 
 const PROXY_ROUTES = {
   "/api/top": `/data/Records/Top/${ORG_ID}`,

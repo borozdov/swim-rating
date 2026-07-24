@@ -10,7 +10,7 @@ const ROOT = path.join(__dirname, "public");
 // Фронтенд теперь на GitHub Pages — отдельное происхождение от этого сервера,
 // поэтому /api/* нужен CORS. Один конкретный origin, а не "*": ответы с
 // credentials/куки тут не участвуют, но незачем открывать прокси всем подряд.
-const ALLOWED_ORIGIN = "https://borozdov.github.io";
+const ALLOWED_ORIGIN = "https://swim-rating.borozdov.ru";
 const UPSTREAM = "https://rsf.lsport.net";
 const ORG_ID = "5c43657e-c0ef-4eda-9737-025e2f7bbfe2";
 const UPSTREAM_TIMEOUT_MS = 60000; // observed rsf.lsport.net taking 12-40s+ on "unique" queries — 35s was killing real, still-working requests

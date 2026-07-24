@@ -8,7 +8,7 @@ const SPORT_ID = "01f02e8d-6da4-43be-9dbf-05d47ab8a58d"; // Плавание
 // server.js/worker/index.js проксируют это на rsf.lsport.net сами — браузер никогда
 // не делает запрос напрямую к третьему домену (иначе адблокеры молча роняли его как
 // "Failed to fetch").
-const API_ORIGIN = "https://swim-rating.borozdov.ru";
+const API_ORIGIN = "https://api.swim-rating.borozdov.ru";
 const TOP_URL = `${API_ORIGIN}/api/top`;
 const LOCATIONS_URL = `${API_ORIGIN}/api/locations`;
 const SERVER_TAKE = 50; // rows fetched per server round-trip
