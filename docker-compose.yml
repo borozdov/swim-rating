@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "4173"
+
+  # Автоматический HTTPS (Let's Encrypt) — сертификат выпускается и обновляется сам,
+  # достаточно чтобы DNS домена указывал на этот сервер и были открыты порты 80/443.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:

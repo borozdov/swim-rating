@@ -14,41 +14,45 @@ Pages) их не примет и ответит 405.
 
 ## Запуск локально
 
-Без Cloudflare-аккаунта — простой Node-сервер:
-
 ```
 node server.js
 ```
 
 Приложение поднимется на `http://localhost:4173`.
 
-Ближе к продакшену — через Wrangler (тот же Worker, что и в проде):
+## Прод — Docker на Timeweb VPS
+
+Домен `swim-rating.borozdov.ru` (DNS полностью на Timeweb, без делегирования
+куда-либо ещё) указывает A-записью прямо на VPS. На сервере:
 
 ```
-npx wrangler dev
+git clone git@github.com:borozdov/swim-rating.git
+cd swim-rating
+docker compose up -d --build
 ```
 
-## Деплой на Cloudflare Workers
+`docker-compose.yml` поднимает два контейнера: `app` (этот же `server.js`) и
+`caddy` — обратный прокси, который сам получает и продлевает HTTPS-сертификат
+Let's Encrypt (нужно только, чтобы DNS уже указывал на сервер и были открыты
+порты 80/443 — секретов/токенов для этого не требуется).
 
-Вручную:
+Обновление после изменений в коде — на сервере:
 
 ```
-npx wrangler login   # один раз
-npx wrangler deploy
+cd swim-rating && git pull && docker compose up -d --build
 ```
 
-Автоматически — `.github/workflows/deploy.yml` деплоит на каждый push в
-`main` через [wrangler-action](https://github.com/cloudflare/wrangler-action).
-Чтобы он заработал, один раз добавить в **Settings → Secrets and variables →
-Actions** этого репозитория два секрета:
+## Альтернатива — Cloudflare Workers
 
-- `CLOUDFLARE_API_TOKEN` — API-токен с правом **Workers Scripts: Edit** на
-  нужный аккаунт (dashboard.cloudflare.com → **My Profile → API Tokens →
-  Create Token**, шаблон "Edit Cloudflare Workers" подходит как есть).
-- `CLOUDFLARE_ACCOUNT_ID` — ID аккаунта (виден в дашборде справа на странице
-  любого домена/Workers).
-
-После этого `git push` в `main` — единственное, что нужно для выката прода.
+В репозитории есть готовый и рабочий, но сейчас не используемый путь деплоя:
+`worker/index.js` + `wrangler.jsonc` — тот же прокси и статика одним Worker'ом,
+плюс `.github/workflows/deploy.yml` для автодеплоя при push в `main` (нужны
+секреты `CLOUDFLARE_API_TOKEN` с правом Workers Scripts: Edit и
+`CLOUDFLARE_ACCOUNT_ID`). Не используется в проде, потому что для собственного
+домена на Cloudflare Workers пришлось бы делегировать туда DNS всего
+`borozdov.ru` — домен сознательно оставлен на Timeweb. Ручной деплой этим
+путём: `npx wrangler login && npx wrangler deploy` (заведёт на
+`*.workers.dev`, не на свой домен, без переноса DNS).
 
 ## Структура
 
@@ -56,14 +60,12 @@ Actions** этого репозитория два секрета:
   (кириллический сабсет Inter для PDF-экспорта — шрифты jsPDF по умолчанию не
   содержат кириллицы), `icons/` (фавикон, PWA, Open Graph), `robots.txt`,
   `sitemap.xml`, `site.webmanifest`.
-- `worker/index.js` — Cloudflare Worker: проксирует `/api/top` и
-  `/api/locations` к rsf.lsport.net (с кэшем через Workers Cache API и одним
-  повтором при обрыве соединения), остальные пути отдаёт из `public/` через
-  ASSETS-биндинг. Используется в проде (`wrangler.jsonc`).
-- `server.js` — тот же прокси на чистом Node `http`, без Cloudflare —
-  для локальной разработки без аккаунта/CLI.
-- `.github/workflows/deploy.yml` — автодеплой на Cloudflare Workers при push
-  в `main` (см. выше про секреты).
+- `server.js` — прокси к rsf.lsport.net (кэш + один повтор при обрыве) и
+  раздача `public/` на чистом Node `http`, без зависимостей. Крутится в
+  Docker в проде и запускается напрямую для локальной разработки.
+- `Dockerfile`, `docker-compose.yml`, `Caddyfile` — прод-деплой на VPS.
+- `worker/index.js`, `wrangler.jsonc`, `.github/workflows/deploy.yml` —
+  альтернативный путь через Cloudflare Workers (см. выше, сейчас не в проде).
 
 ## Данные
 
