@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # ручной запуск кнопкой на вкладке Actions — без нового коммита
 
 concurrency:
   group: deploy-worker
