@@ -22,3 +22,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Дефолтная версия, которую сама экшена нашла закэшированной (3.90.0), не видит
+          # main в wrangler.jsonc и падает с "Missing entry-point" — тот же конфиг с
+          # актуальным Wrangler (проверено локально, 4.112.0) находит его нормально.
+          wranglerVersion: "4"
